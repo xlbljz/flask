@@ -307,7 +307,7 @@ def wechat_servant():
                         'access_token': access_token,
                         'cursor': cursor,
                         'token': xml_dict['Token'],
-                        "open_kfid": xml_dict['Open_kfid']
+                        "open_kfid": xml_dict['OpenKfId']
                     }
                     # 持续下载数据直到下载完毕
                     while True:

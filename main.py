@@ -48,7 +48,7 @@ def steps(msg_list):
         print('未添加处理的消息类型')
         return 0
 
-    if datetime.datetime.now() - datetime.datetime.fromtimestamp(find_key(msg_list, 'send_time')) < 120:
+    if int(time.time()) - find_key(msg_list, 'send_time') < 120:
         output_text = communicate_with_chatgpt(input_text)
 
         # output_voice_data = chatgpt_response2_voice(output_text)
@@ -56,7 +56,7 @@ def steps(msg_list):
         # send2_wechat(output_voice_data, msg_list.external_userid,
         #              msg_list.open_kfid)
         send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
-                    find_key(msg_list, 'open_kfid'))
+                          find_key(msg_list, 'open_kfid'))
 
 # speech_config = speechsdk.SpeechConfig(
 #     subscription=config['Key'], region=config['Region'])
@@ -346,7 +346,7 @@ def wechat_servant():
                         if download_response.status_code == 200:
                             print("下载成功，消息如下：", d_r_json['msg_list'])
                             if d_r_json.get('has_more', 0) == 0:
-                                cursor = d_r_json['next_cursor']
+                                cursor = d_r_json.get('next_cursor', None)
                                 with open('cursor.pickle', 'wb') as cursor_file:
                                     pickle.dump(cursor, cursor_file)
                                 break

@@ -311,20 +311,21 @@ def wechat_servant():
                     }
                     # 持续下载数据直到下载完毕
                     while True:
-                        download_response = httpx.get(
+                        download_response = httpx.post(
                             f"https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg", params=params)
+                        d_r_json = download_response.json()
                         # 处理API的响应结果
                         if download_response.status_code == 200:
-                            print("下载成功，消息如下：", download_response.msg_list)
-                            if download_response.has_more == 0:
-                                cursor = download_response.next_cursor
+                            print("下载成功，消息如下：", d_r_json['msg_list'])
+                            if d_r_json['has_more'] == 0:
+                                cursor = d_r_json['next_cursor']
                                 with open('cursor.pickle', 'wb') as cursor_file:
                                     pickle.dump(cursor, cursor_file)
                                 break
                         else:
                             print("下载失败，错误码为：", download_response.status_code)
                     # 执行主要步骤
-                    steps(download_response.msglist)
+                    steps(d_r_json['msg_list'])
 
 
 if __name__ == '__main__':

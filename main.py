@@ -12,8 +12,8 @@ import xml.etree.cElementTree as ET
 from flask import Flask, request, Response, jsonify
 
 import openai
-import azure.cognitiveservices.speech as speechsdk
-from azure.cognitiveservices.speech.audio import AudioOutputConfig
+# import azure.cognitiveservices.speech as speechsdk
+# from azure.cognitiveservices.speech.audio import AudioOutputConfig
 from configparser import ConfigParser
 
 from WXBizMsgCrypt3 import WXBizMsgCrypt
@@ -44,17 +44,20 @@ def steps(msg_list):
 
     output_text = communicate_with_chatgpt(input_text)
 
-    output_voice_data = chatgpt_response2_voice(output_text)
+    # output_voice_data = chatgpt_response2_voice(output_text)
 
-    send2_wechat(output_voice_data, msg_list.external_userid,
+    # send2_wechat(output_voice_data, msg_list.external_userid,
+    #              msg_list.open_kfid)
+    send_text2_wechat(output_text, msg_list.external_userid,
                  msg_list.open_kfid)
+
 
 
 config_file = ConfigParser()
 config_file.read('setting.ini', encoding='utf-8')
 config = config_file['Speechsdk']
-speech_config = speechsdk.SpeechConfig(
-    subscription=config['Key'], region=config['Region'])
+# speech_config = speechsdk.SpeechConfig(
+#     subscription=config['Key'], region=config['Region'])
 email = config_file['ChatGPT']['Email']
 password = config_file['ChatGPT']['Password']
 
@@ -193,6 +196,28 @@ def send2_wechat(output_voice_data, user_id, servant_id):
     else:
         print("发送失败，错误码为：", res.status_code)
 
+def send_text2_wechat(output_text, user_id, servant_id):
+    # 调用客服接口向客户发送消息
+    params = {'access_token': access_token}
+    data = {
+        'touser': user_id,
+        'open_kfid': servant_id,
+        'msgtype': 'text',
+        'text': {
+            'content': output_text
+        }
+    }
+    string_textmsg = json.dumps(data)
+    # HEADERS = {"Content-Type": "application/json ;charset=utf-8"}
+    send_url = f'https://qyapi.weixin.qq.com/cgi-bin/kf/send_msg'
+    # wechaturl = config.wechaturl
+    # res = httpx.post(wechaturl, data=string_textmsg, headers=HEADERS)
+    res = httpx.post(send_url, data=string_textmsg, params=params)
+    # 处理发送消息的响应结果
+    if res.status_code == 200:
+        print("发送成功")
+    else:
+        print("发送失败，错误码为：", res.status_code)
 
 @app.route('/wx', methods=['GET', 'POST'])
 def wechat_servant():

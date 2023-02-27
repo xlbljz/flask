@@ -48,7 +48,7 @@ def steps(msg_list):
         print('未添加处理的消息类型')
         return 0
 
-    if datetime.datetime.now() - find_key(msg_list, 'send_time') < 120:
+    if datetime.datetime.now() - datetime.datetime.fromtimestamp(find_key(msg_list, 'send_time')) < 120:
         output_text = communicate_with_chatgpt(input_text)
 
         # output_voice_data = chatgpt_response2_voice(output_text)

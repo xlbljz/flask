@@ -286,6 +286,7 @@ def wechat_servant():
                     global xml_dict
                     xml_dict = {
                         elem.tag: elem.text for elem in xml_tree.iter()}
+                    print(xml_dict)
 
                     # 使用企业微信 API 接收消息
                     # 获取token
@@ -305,8 +306,8 @@ def wechat_servant():
                     params = {
                         'access_token': access_token,
                         'cursor': cursor,
-                        'token': xml_dict['token'],
-                        "open_kfid": xml_dict['open_kfid']
+                        'token': xml_dict['Token'],
+                        "open_kfid": xml_dict['Open_kfid']
                     }
                     # 持续下载数据直到下载完毕
                     while True:

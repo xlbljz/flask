@@ -35,12 +35,17 @@ def steps(msg_list):
     口语语伴主要步骤
     """
     msg_type = msg_list['msgtype']
-
     if msg_type == 'voice':
         input_text = user_voice2_text(
             msg_list['voice']['media_id'])
     elif msg_type == 'text':
         input_text = msg_list['text']['content']
+    elif msg_type == 'event':
+        with open(f'session_{msg_list["external_userid"]}_to_{msg_list["open_kfid"]}.pickle', 'wb') as session_file:
+            pickle.dump(msg_list, session_file)
+    else:
+        print('未添加处理的消息类型')
+        return 0
 
     output_text = communicate_with_chatgpt(input_text)
 
@@ -315,7 +320,7 @@ def wechat_servant():
                         download_response = httpx.post(
                             f"https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg", params=params)
                         d_r_json = download_response.json()
-                        print('d_r_json')
+                        print(d_r_json)
                         # 处理API的响应结果
                         if download_response.status_code == 200:
                             print("下载成功，消息如下：", d_r_json['msg_list'])

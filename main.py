@@ -312,7 +312,7 @@ def wechat_servant():
                     # 持续下载数据直到下载完毕
                     while True:
                         download_response = httpx.get(
-                            f"https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg", stream=True, params=params)
+                            f"https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg", params=params)
                         # 处理API的响应结果
                         if download_response.status_code == 200:
                             print("下载成功，消息如下：", download_response.msg_list)

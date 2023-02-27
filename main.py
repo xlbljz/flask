@@ -17,7 +17,7 @@ import openai
 from configparser import ConfigParser
 
 from WXBizMsgCrypt3 import WXBizMsgCrypt
-from config import config
+import config
 
 REQUEST_ID_HEADER = 'x-fc-request-id'
 
@@ -56,15 +56,11 @@ def steps(msg_list):
     send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
                  find_key(msg_list, 'open_kfid'))
 
-
-
-config_file = ConfigParser()
-config_file.read('setting.ini', encoding='utf-8')
-config = config_file['Speechsdk']
+config = config.Speechsdk
 # speech_config = speechsdk.SpeechConfig(
 #     subscription=config['Key'], region=config['Region'])
-email = config_file['ChatGPT']['Email']
-password = config_file['ChatGPT']['Password']
+email = config.Email
+password = config.Password
 
 def find_key(json_obj, key):
     """
@@ -338,7 +334,7 @@ def wechat_servant():
                         download_response = httpx.post(
                             f"https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg", params=params)
                         d_r_json = download_response.json()
-                        print('d_r_json')
+                        print(d_r_json)
                         # 处理API的响应结果
                         if download_response.status_code == 200:
                             print("下载成功，消息如下：", d_r_json['msg_list'])

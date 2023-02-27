@@ -41,6 +41,11 @@ def steps(msg_list):
             msg_list['voice']['media_id'])
     elif msg_type == 'text':
         input_text = msg_list['text']['content']
+    elif msg_type == 'event':
+        return 0
+    else:
+        print('未添加处理的消息类型')
+        return 0
 
     output_text = communicate_with_chatgpt(input_text)
 
@@ -345,7 +350,8 @@ def wechat_servant():
                         else:
                             print("下载失败，错误码为：", download_response.status_code)
                     # 执行主要步骤
-                    steps(d_r_json['msg_list'][0])
+                    for mes in d_r_json['msg_list']:
+                        steps(mes)
 
 
 if __name__ == '__main__':

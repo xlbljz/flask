@@ -274,7 +274,7 @@ def wechat_servant():
     if request.method == 'POST':
         try:
             print('OKOK')
-            # return Response(status=200)
+            return Response(status=200)
         finally:
             # 微信服务器发来的三个get参数
             # signature = request.args.get("signature")

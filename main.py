@@ -48,8 +48,8 @@ def steps(msg_list):
 
     # send2_wechat(output_voice_data, msg_list.external_userid,
     #              msg_list.open_kfid)
-    send_text2_wechat(output_text, msg_list['external_userid'],
-                 msg_list['open_kfid'])
+    send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
+                 find_key(msg_list, 'open_kfid'))
 
 
 
@@ -61,6 +61,24 @@ config = config_file['Speechsdk']
 email = config_file['ChatGPT']['Email']
 password = config_file['ChatGPT']['Password']
 
+def find_key(json_obj, key):
+    """
+    递归查找 JSON 中的某个字段并返回该字段的值
+    """
+    if isinstance(json_obj, dict):
+        for k, v in json_obj.items():
+            if k == key:
+                return v
+            else:
+                result = find_key(key, v)
+                if result is not None:
+                    return result
+    elif isinstance(json_obj, list):
+        for item in json_obj:
+            result = find_key(item, key)
+            if result is not None:
+                return result
+    return None
 
 def user_voice2_text(voice_Content):
     # # Find your key and resource region under the 'Keys and Endpoint' tab in your Speech resource in Azure Portal

@@ -6,6 +6,7 @@ import json
 import httpx
 import base64
 import pickle
+import time
 
 import xml.etree.cElementTree as ET
 
@@ -47,14 +48,15 @@ def steps(msg_list):
         print('未添加处理的消息类型')
         return 0
 
-    output_text = communicate_with_chatgpt(input_text)
+    if datetime.datetime.now() - find_key(msg_list, 'send_time') < 120:
+        output_text = communicate_with_chatgpt(input_text)
 
-    # output_voice_data = chatgpt_response2_voice(output_text)
+        # output_voice_data = chatgpt_response2_voice(output_text)
 
-    # send2_wechat(output_voice_data, msg_list.external_userid,
-    #              msg_list.open_kfid)
-    send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
-                 find_key(msg_list, 'open_kfid'))
+        # send2_wechat(output_voice_data, msg_list.external_userid,
+        #              msg_list.open_kfid)
+        send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
+                    find_key(msg_list, 'open_kfid'))
 
 # speech_config = speechsdk.SpeechConfig(
 #     subscription=config['Key'], region=config['Region'])
@@ -127,17 +129,23 @@ def user_voice2_text(voice_Content):
 
 def communicate_with_chatgpt(input_text):
     openai.api_key = config.openaikey
-    response = openai.Completion.create(
-        model='text-curie-001',
-        # model="text-curie-001",
-        prompt=input_text,
-        temperature=1,
-        max_tokens=150,
-        top_p=1,
-        frequency_penalty=1,
-        presence_penalty=0.1,
-        stop=["YOU:", "AI:"]
-    )
+    while True:
+        try:
+            response = openai.Completion.create(
+                model='text-curie-001',
+                # model="text-curie-001",
+                prompt=input_text,
+                temperature=1,
+                max_tokens=150,
+                top_p=1,
+                frequency_penalty=1,
+                presence_penalty=0.1,
+                stop=["YOU:", "AI:"]
+            )
+            break
+        except openai.error.RateLimitError:
+            time.sleep(0.1)
+        
     return response.choices[0].text
 
 
@@ -337,7 +345,7 @@ def wechat_servant():
                         # 处理API的响应结果
                         if download_response.status_code == 200:
                             print("下载成功，消息如下：", d_r_json['msg_list'])
-                            if d_r_json['has_more'] == 0:
+                            if d_r_json.get('has_more', 0) == 0:
                                 cursor = d_r_json['next_cursor']
                                 with open('cursor.pickle', 'wb') as cursor_file:
                                     pickle.dump(cursor, cursor_file)

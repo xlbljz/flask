@@ -166,6 +166,7 @@ def send2_wechat(output_voice_data, user_id, servant_id):
         'form-data': (None, voice_base64, None)}
     response = httpx.post(upload_url, data=data,
                           params=params, headers=headers)
+    print(response.json())
 
     # 处理API的响应结果
     if response.status_code == 200:
@@ -314,6 +315,7 @@ def wechat_servant():
                         download_response = httpx.post(
                             f"https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg", params=params)
                         d_r_json = download_response.json()
+                        print('d_r_json')
                         # 处理API的响应结果
                         if download_response.status_code == 200:
                             print("下载成功，消息如下：", d_r_json['msg_list'])

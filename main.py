@@ -56,7 +56,6 @@ def steps(msg_list):
     send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
                  find_key(msg_list, 'open_kfid'))
 
-config = config.Speechsdk
 # speech_config = speechsdk.SpeechConfig(
 #     subscription=config['Key'], region=config['Region'])
 email = config.Email

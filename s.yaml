@@ -25,6 +25,7 @@ services:
   name: wechat_GPT #  服务名称
   internetAccess: true
   type: python-flask
+  component: python-flask
   actions: # 自定义执行逻辑
     post-deploy: # 在deploy之后运行
       - run: python main.py

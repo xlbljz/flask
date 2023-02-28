@@ -13,7 +13,7 @@ import xml.etree.cElementTree as ET
 from flask import Flask, request, Response, jsonify
 
 import openai
-# import azure.cognitiveservices.speech as speechsdk
+import azure.cognitiveservices.speech as speechsdk
 # from azure.cognitiveservices.speech.audio import AudioOutputConfig
 from configparser import ConfigParser
 
@@ -51,15 +51,15 @@ def steps(msg_list):
     if int(time.time()) - find_key(msg_list, 'send_time') < 120:
         output_text = communicate_with_chatgpt(input_text)
 
-        # output_voice_data = chatgpt_response2_voice(output_text)
+        output_voice_data = chatgpt_response2_voice(output_text)
 
-        # send2_wechat(output_voice_data, msg_list.external_userid,
-        #              msg_list.open_kfid)
-        send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
-                          find_key(msg_list, 'open_kfid'))
+        send2_wechat(output_voice_data, find_key(msg_list, 'external_userid'),
+                     find_key(msg_list, 'open_kfid'))
+        # send_text2_wechat(output_text, find_key(msg_list, 'external_userid'),
+        #                   find_key(msg_list, 'open_kfid'))
 
-# speech_config = speechsdk.SpeechConfig(
-#     subscription=config['Key'], region=config['Region'])
+speech_config = speechsdk.SpeechConfig(
+    subscription=config.Key, region=config.Region)
 email = config.Email
 password = config.Password
 
@@ -135,7 +135,7 @@ def communicate_with_chatgpt(input_text):
                 model='text-curie-001',
                 # model="text-curie-001",
                 prompt=input_text,
-                temperature=1,
+                temperature=0.7,
                 max_tokens=150,
                 top_p=1,
                 frequency_penalty=1,

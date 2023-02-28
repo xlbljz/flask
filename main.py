@@ -196,7 +196,9 @@ def send2_wechat(output_voice_data, user_id, servant_id):
 
     # 处理API的响应结果
     if response.status_code == 200:
-        media_id = response.json()["media_id"]
+        # media_id = response.json()["media_id"]
+        print('------------------', response.json())
+        media_id = find_key(response.json(), 'media_id')
         print("上传成功，media_id为：", media_id)
     else:
         print("上传失败，错误码为：", response.status_code)

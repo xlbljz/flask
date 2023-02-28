@@ -176,7 +176,8 @@ def send2_wechat(output_voice_data, user_id, servant_id):
     upload_url = 'https://qyapi.weixin.qq.com/cgi-bin/media/upload'
     params = {
         'access_token': access_token,
-        'type': 'voice'
+        'type': 'voice',
+        'debug': 1
     }
     boundary = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     headers = {'Content-Type': f'multipart/form-data; boundary={boundary}'}
@@ -188,7 +189,6 @@ def send2_wechat(output_voice_data, user_id, servant_id):
 
     data = {
         'Content-Disposition': f'form-data; name="media"; filename={os.path.basename(output_file_path)};duration={duration}',
-        'Content-Type': 'application/octet-stream',
         'form-data': (None, voice_base64, None)}
     response = httpx.post(upload_url, data=data,
                           params=params, headers=headers)

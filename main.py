@@ -178,7 +178,7 @@ def send2_wechat(output_voice_data, user_id, servant_id):
         'access_token': access_token,
         'type': 'voice'
     }
-    boundary = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    boundary = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     headers = {'Content-Type': f'multipart/form-data; boundary={boundary}'}
 
     # 构造 multipart/form-data 格式的请求体

@@ -14,6 +14,45 @@ actions: # 自定义全局的执行逻辑
       path: ./venv # 命令行运行的路径
   complete-deploy: # 项目deploy执行完成之后执行
     - run: python main.py # 要使用的插件
+# 定义应用程序基本信息
+app:
+  name: my-flask-app
+  description: "My first Flask app on Serverless Devs"
+  region: cn-shanghai
+
+# 定义函数服务信息
+service:
+  name: my-flask-service
+  description: "My first Flask service on Serverless Devs"
+  internetAccess: true
+  type: python-flask
+  events:
+    - http:
+        path: /wx
+        method: GET
+    - http:
+        path: /wx
+        method: POST
+
+# 定义函数服务的配置信息
+python:
+  version: 3.11.0
+
+# 定义函数服务代码
+codeUri: ./
+handler: app:wechat_servant
+
+# 定义路由组件信息
+route:
+  port: 80
+
+https:
+  domainName: chat.xlbljz.com
+  certificateName: my-flask-app-ssl
+  customDomain:
+    protocol: https
+    certificate:
+      certificateName: my-flask-app-ssl
 
 services:
   wechat_GPT: #  服务名称
@@ -21,17 +60,9 @@ services:
       post-deploy: # 在deploy之后运行
         - run: python main.py
           path: ./venv
-  # gateway:
-  #   component: serverless-gateway # 路由组件：HTTP URL和服务之间的映射规则
-    # props:
-    #   routes:
-    #     - route: /~assets
-    #       value: ${assets.output.url}
-    #     - route: /
-    #       value: ${nextjs-portal.output.url}
-    #       index: index.html
-    #     - route: /~portal
-    #       value: ${nextjs-portal.output.url}
-    #       inex: index.html
-    #     - route: /~blog
-    #       value: ${express-blog.output.url}
+  gateway:
+    component: serverless-gateway # 路由组件：HTTP URL和服务之间的映射规则
+    props:
+      routes:
+        - route: /wx
+          value: 80

@@ -186,14 +186,17 @@ def send2_wechat(output_voice_data, user_id, servant_id):
     voice_base64 = base64.b64encode(
         output_voice_data.audio_data).decode('utf-8')
     duration = output_voice_data.audio_duration
-
+    
     data = {
         'Content-Disposition': f'form-data; name="media"; filename={os.path.basename(output_file_path)};duration={duration}',
         'form-data': (None, voice_base64, None)}
     response = httpx.post(upload_url, data=data,
                           params=params, headers=headers)
     print(response.json())
-
+    print('----------------------------------------------------------------')
+    print(response.request.headers)
+    print(response.request.body)
+    
     # 处理API的响应结果
     if response.status_code == 200:
         # media_id = response.json()["media_id"]

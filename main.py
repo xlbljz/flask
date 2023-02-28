@@ -106,7 +106,7 @@ def user_voice2_text(voice_Content):
     speech_recognizer.stop_continuous_recognition()
 
     # 保存语音文件
-    now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     input_file_path = f"voice_cache/intput/{now}.wav"
     with open(input_file_path, "wb") as f:
         f.write(voice_Content)
@@ -156,7 +156,7 @@ def chatgpt_response2_voice(text):
     # speech_config.speech_synthesis_language = lang
     # In this sample we are using the default speaker
     # Learn how to customize your speaker using SSML in Azure Cognitive Services Speech documentation
-    now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     global output_file_path
     output_file_path = f"voice_cache/output/{now}.wav"
     # audio_output = speechsdk.audio.AudioOutputConfig(filename=file_name)

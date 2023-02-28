@@ -21,11 +21,14 @@ app:
   region: cn-shanghai
 
 # 定义函数服务信息
-service:
-  name: my-flask-service
-  description: "My first Flask service on Serverless Devs"
+services:
+  name: wechat_GPT #  服务名称
   internetAccess: true
   type: python-flask
+    actions: # 自定义执行逻辑
+      post-deploy: # 在deploy之后运行
+        - run: python main.py
+          path: ./venv
   events:
     - http:
         path: /wx
@@ -33,6 +36,12 @@ service:
     - http:
         path: /wx
         method: POST
+  gateway:
+    component: serverless-gateway # 路由组件：HTTP URL和服务之间的映射规则
+    props:
+      routes:
+        - route: /wx
+          value: 80
 
 # 定义函数服务的配置信息
 python:
@@ -42,10 +51,6 @@ python:
 codeUri: ./
 handler: app:wechat_servant
 
-# 定义路由组件信息
-route:
-  port: 80
-
 https:
   domainName: chat.xlbljz.com
   certificateName: my-flask-app-ssl
@@ -53,16 +58,3 @@ https:
     protocol: https
     certificate:
       certificateName: my-flask-app-ssl
-
-services:
-  wechat_GPT: #  服务名称
-    actions: # 自定义执行逻辑
-      post-deploy: # 在deploy之后运行
-        - run: python main.py
-          path: ./venv
-  gateway:
-    component: serverless-gateway # 路由组件：HTTP URL和服务之间的映射规则
-    props:
-      routes:
-        - route: /wx
-          value: 80

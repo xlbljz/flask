@@ -167,7 +167,7 @@ def chatgpt_response2_voice(text):
     result = synthesizer.speak_text_async(text).get()
     stream = speechsdk.AudioDataStream(result)
     stream.save_to_wav_file(output_file_path)
-    return result
+    return output_file_path
 
 
 def send2_wechat(output_voice_data, user_id, servant_id):
@@ -179,32 +179,24 @@ def send2_wechat(output_voice_data, user_id, servant_id):
         'type': 'voice',
         'debug': 1
     }
-    boundary = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    headers = {'Content-Type': f'multipart/form-data; boundary={boundary}'}
-
-    # 构造 multipart/form-data 格式的请求体
-    voice_base64 = base64.b64encode(
-        output_voice_data.audio_data).decode('utf-8')
-    duration = output_voice_data.audio_duration
+    headers = {'Content-Type': f'multipart/form-data'}
     
-    data = {
-        'Content-Disposition': f'form-data; name="media"; filename={os.path.basename(output_file_path)};duration={duration}',
-        'form-data': (None, voice_base64, None)}
-    response = httpx.post(upload_url, data=data,
-                          params=params, headers=headers)
-    print(response.json())
-    print('----------------------------------------------------------------')
-    print(response.request.headers)
-    print(response.request.body)
+    files = {
+        'media': (f'{os.path.basename(output_file_path)}.amr', open(output_voice_data, "rb"), None)}
+    response = httpx.post(upload_url, files=files,
+                            params=params, headers=headers)
     
+    errcode = response.json()["errcode"]
     # 处理API的响应结果
     if response.status_code == 200:
-        # media_id = response.json()["media_id"]
-        print('------------------', response.json())
-        media_id = find_key(response.json(), 'media_id')
-        print("上传成功，media_id为：", media_id)
+        if errcode == 0:
+            media_id = response.json()["media_id"]
+            # media_id = find_key(response.json(), 'media_id')
+            print("上传成功，media_id为：", media_id)
+        else:
+            print("上传失败，错误码为：", errcode)
     else:
-        print("上传失败，错误码为：", response.status_code)
+        print("连携错误，错误码为：", response.status_code)
 
     # 调用客服接口向客户发送消息
     params = {'access_token': access_token}

@@ -164,10 +164,11 @@ def chatgpt_response2_voice(text):
         speechsdk.SpeechSynthesisOutputFormat.AmrWb16000Hz)
     synthesizer = speechsdk.SpeechSynthesizer(
         speech_config=speech_config, audio_config=None)
-    result = synthesizer.speak_text_async(text).get()
-    stream = speechsdk.AudioDataStream(result)
-    stream.save_to_wav_file(output_file_path)
-    return output_file_path
+    result = synthesizer.speak_text_async(text).get().audio_data
+    # TODO:保存文件
+    # stream = speechsdk.AudioDataStream(result)
+    # stream.save_to_wav_file(output_file_path)
+    return result
 
 
 def send2_wechat(output_voice_data, user_id, servant_id):
@@ -182,7 +183,7 @@ def send2_wechat(output_voice_data, user_id, servant_id):
     headers = {'Content-Type': f'multipart/form-data'}
     
     files = {
-        'media': (f'{os.path.basename(output_file_path)}.amr', open(output_voice_data, "rb"), None)}
+        'media': (f'{os.path.basename(output_file_path)}.amr', output_voice_data, None)}
     response = httpx.post(upload_url, files=files,
                             params=params, headers=headers)
     
@@ -208,6 +209,8 @@ def send2_wechat(output_voice_data, user_id, servant_id):
             'media_id': media_id
         }
     }
+    print('----------------------------------------------------------------')
+    print(data)
     string_textmsg = json.dumps(data)
     # HEADERS = {"Content-Type": "application/json ;charset=utf-8"}
     send_url = f'https://qyapi.weixin.qq.com/cgi-bin/kf/send_msg'
